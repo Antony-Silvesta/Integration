@@ -47,9 +47,9 @@ jobs:
         done
         echo "MongoDB did not start in time"; exit 1
 
-    - name: Fetch MongoDB Collections
+    - name: Fetch MongoDB Collections (Alternative Format)
       run: |
-        echo "Fetching all collections from 'my_database' database"
-        docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "db.getCollectionNames()" > collections.txt
+        echo "Fetching collections from 'my_database' database"
+        docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --quiet --eval "JSON.stringify(db.getCollectionNames())" > collections.json
         echo "Collections fetched from MongoDB:"
-        cat collections.txt
+        cat collections.json
