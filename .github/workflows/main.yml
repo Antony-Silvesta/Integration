@@ -35,7 +35,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-     
 
     - name: Wait for MongoDB to be ready
       run: |
@@ -47,4 +46,7 @@ jobs:
         done
         echo "MongoDB did not become ready in time"; exit 1
 
-  
+    - name: Show MongoDB Collections
+      run: |
+        echo "Listing collections in the 'my_database' database"
+        docker exec -it $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "printjson(db.getCollectionNames())"
