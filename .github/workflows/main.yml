@@ -36,6 +36,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
 
+    - name: Install MongoDB Shell Client
+      run: |
+        echo "Installing MongoDB shell client"
+        sudo apt-get update
+        sudo apt-get install -y mongodb-clients
+
     - name: Wait for MongoDB to start
       run: |
         echo "Waiting for MongoDB service to start"
