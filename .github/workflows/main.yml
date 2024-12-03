@@ -1,65 +1,39 @@
-name: MongoDB CI Pipeline
+name: MongoDB CI/CD
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  mongodb-ci:
+  test:
     runs-on: ubuntu-latest
 
     services:
       mongodb:
-        image: mongo:5.0
+        image: mongo:latest
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd="mongo --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+
+    env:
+      MONGO_URI: "mongodb://localhost:27017"
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Check out code
+        uses: actions/checkout@v3
 
-    - name: Set up Python environment
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.9"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Install MongoDB Shell Client (from MongoDB Official Repo)
-      run: |
-        echo "Installing MongoDB shell client"
-        sudo apt-get update
-        sudo apt-get install -y gnupg
-        wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/mongodb-archive-keyring.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-        sudo apt-get update
-        sudo apt-get install -y mongodb-mongosh
+      - name: Seed MongoDB
+        run: python app/seed.py
 
-    - name: Wait for MongoDB to start
-      run: |
-        echo "Waiting for MongoDB service to start"
-        for i in {1..10}; do
-          if nc -z localhost 27017; then
-            echo "MongoDB is ready"; exit 0
-          fi
-          echo "MongoDB not ready, retrying..."; sleep 3
-        done
-        echo "MongoDB did not start in time"; exit 1
-
-    - name: Fetch MongoDB Collections
-      run: |
-        echo "Fetching collections from 'my_database' database"
-        mongosh --host localhost --port 27017 --eval "JSON.stringify(db.getCollectionNames())" my_database > collections.json
-        echo "Collections fetched from MongoDB:"
-        cat collections.json
+      - name: Test listing entries
+        run: python app/app.py
