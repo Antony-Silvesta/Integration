@@ -36,11 +36,15 @@ jobs:
       run: |
         python -m pip install --upgrade pip
 
-    - name: Install MongoDB Shell Client
+    - name: Install MongoDB Shell Client (from MongoDB Official Repo)
       run: |
         echo "Installing MongoDB shell client"
         sudo apt-get update
-        sudo apt-get install -y mongodb-clients
+        sudo apt-get install -y gnupg
+        wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/mongodb-archive-keyring.gpg] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+        sudo apt-get update
+        sudo apt-get install -y mongodb-mongosh
 
     - name: Wait for MongoDB to start
       run: |
@@ -56,6 +60,6 @@ jobs:
     - name: Fetch MongoDB Collections
       run: |
         echo "Fetching collections from 'my_database' database"
-        mongo --host localhost --port 27017 --eval "JSON.stringify(db.getCollectionNames())" my_database > collections.json
+        mongosh --host localhost --port 27017 --eval "JSON.stringify(db.getCollectionNames())" my_database > collections.json
         echo "Collections fetched from MongoDB:"
         cat collections.json
