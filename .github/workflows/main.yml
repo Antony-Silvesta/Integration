@@ -21,7 +21,7 @@ jobs:
           --health-cmd="mongo --eval 'db.runCommand({ ping: 1 })'"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=5
+          --health-retries=10
 
     steps:
     - name: Checkout code
@@ -47,9 +47,13 @@ jobs:
         done
         echo "MongoDB did not start in time"; exit 1
 
+    - name: Check if MongoDB container is running
+      run: |
+        docker ps
+
     - name: Fetch MongoDB Collections (Alternative Format)
       run: |
         echo "Fetching collections from 'my_database' database"
-        docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --quiet --eval "JSON.stringify(db.getCollectionNames())" > collections.json
+        docker exec -it $(docker ps -q --filter "ancestor=mongo:5.0") mongo --eval "db.getCollectionNames()" my_database > collections.json
         echo "Collections fetched from MongoDB:"
         cat collections.json
