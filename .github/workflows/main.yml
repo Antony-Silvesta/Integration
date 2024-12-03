@@ -50,4 +50,6 @@ jobs:
     - name: Fetch MongoDB Collections
       run: |
         echo "Fetching all collections from 'my_database' database"
-        docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "printjson(db.getCollectionNames())"
+        docker exec -it $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "db.getCollectionNames()" > collections.txt
+        echo "Collections fetched from MongoDB:"
+        cat collections.txt
