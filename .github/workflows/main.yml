@@ -46,10 +46,7 @@ jobs:
         done
         echo "MongoDB did not become ready in time"; exit 1
 
-    
-        
     - name: Show MongoDB Collections
       run: |
-          echo "Listing collections in the 'my_database' database"
-          docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "printjson(db.getCollectionNames())"
-      
+        echo "Listing collections in the 'my_database' database"
+        docker exec $(docker ps -q --filter "ancestor=mongo:5.0") mongo my_database --eval "printjson(db.getCollectionNames())"
