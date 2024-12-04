@@ -37,3 +37,14 @@ jobs:
 
       - name: Test listing entries
         run: python app/app.py
+        
+      - name: Set up MongoDB with dummy data
+        run: |
+          python -c "
+          from pymongo import MongoClient;
+          client = MongoClient('mongodb://localhost:27017');
+          db = client['test_db'];
+          db['test_collection'].insert_one({'key': 'value'});
+          print('Collections:', db.list_collection_names());
+          "
+      
