@@ -3,7 +3,8 @@ def list_entries():
     """List all entries in the collection."""
     db = connect_db()
     try:
-        collection = db["my_collection"]  # Updated collection 
+        collection = db["silvesta"]
+        #collection = db["my_collection"]  # Updated collection 
         entries = collection.find()
         for entry in entries:
             print(entry)

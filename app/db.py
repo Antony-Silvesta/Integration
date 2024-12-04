@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import os
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 DB_NAME = "my_database"
-COLLECTION_NAME = "my_collection"
+COLLECTION_NAME = "silvesta"
 def connect_db():
     """Connect to MongoDB and return the database object."""
     try:
