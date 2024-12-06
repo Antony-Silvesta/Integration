@@ -3,7 +3,7 @@ def seed_database():
     """Create a collection and insert seed data."""
     db = connect_db()
     try:
-        collection = db["my_collection"]
+        collection = db["file"]
         collection.insert_many([
             {"name": "John Doe", "age": 28},
             {"name": "Jane Smith", "age": 34},
